@@ -272,3 +272,9 @@ void SphereMesh::clear()
 		if(glIsBuffer(GLuint(array_buffers[i])))
 			glDeleteBuffersARB(1, (GLuint *)(array_buffers+i));
 }
+
+
+void SphereMesh::loadSpheres(const std::string& filepath)
+{
+
+}

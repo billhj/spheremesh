@@ -29,6 +29,8 @@ public:
 	void openMeshOBJ(const std::string& filepath);
 	void openMeshOFF(const std::string& filepath);
 
+	void loadSpheres(const std::string& filepath);
+
 	void init();
 	void update();
 	void clear();
