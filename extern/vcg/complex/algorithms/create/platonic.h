@@ -50,7 +50,6 @@ namespace tri {
 template <class TetraMeshType>
 void Tetrahedron(TetraMeshType &in)
 {
- typedef TetraMeshType MeshType;
  typedef typename TetraMeshType::CoordType CoordType;
  typedef typename TetraMeshType::VertexPointer  VertexPointer;
  typedef typename TetraMeshType::VertexIterator VertexIterator;
@@ -278,7 +277,6 @@ void Icosahedron(IcoMeshType &in)
 template <class MeshType>
 void Hexahedron(MeshType &in)
 {
- typedef typename MeshType::ScalarType ScalarType;
  typedef typename MeshType::CoordType CoordType;
  typedef typename MeshType::VertexPointer  VertexPointer;
  typedef typename MeshType::VertexIterator VertexIterator;
@@ -327,7 +325,6 @@ void Hexahedron(MeshType &in)
 template <class MeshType>
 void Square(MeshType &in)
 {
-  typedef typename MeshType::ScalarType ScalarType;
   typedef typename MeshType::CoordType CoordType;
   typedef typename MeshType::VertexPointer  VertexPointer;
   typedef typename MeshType::VertexIterator VertexIterator;
@@ -405,9 +402,7 @@ void SphericalCap(MeshType &in, float angleRad, const int subdiv = 3 )
 template <class MeshType>
 void Sphere(MeshType &in, const int subdiv = 3 )
 {
- typedef typename MeshType::ScalarType ScalarType;
  typedef typename MeshType::CoordType CoordType;
- typedef typename MeshType::VertexPointer  VertexPointer;
  typedef typename MeshType::VertexIterator VertexIterator;
  typedef typename MeshType::FaceIterator   FaceIterator;
     if(in.vn==0 && in.fn==0) Icosahedron(in);
@@ -445,7 +440,6 @@ void Cone( MeshType& in,
           const typename MeshType::ScalarType h,
           const int SubDiv = 36  )
 {
- typedef typename MeshType::ScalarType ScalarType;
  typedef typename MeshType::CoordType CoordType;
  typedef typename MeshType::VertexPointer  VertexPointer;
  typedef typename MeshType::VertexIterator VertexIterator;
@@ -534,7 +528,6 @@ void Cone( MeshType& in,
 template <class MeshType >
 void Box(MeshType &in, const typename MeshType::BoxType & bb )
 {
- typedef typename MeshType::ScalarType ScalarType;
  typedef typename MeshType::CoordType CoordType;
  typedef typename MeshType::VertexPointer  VertexPointer;
  typedef typename MeshType::VertexIterator VertexIterator;
@@ -603,7 +596,7 @@ void Torus(MeshType &m, float hRingRadius, float vRingRadius, int hRingDiv=24, i
   }
   FaceGrid(m,vRingDiv+1,hRingDiv+1);
   tri::Clean<MeshType>::RemoveDuplicateVertex(m);
-  tri::Allocator<MeshType>::CompactVertexVector(m);
+  tri::Allocator<MeshType>::CompactEveryVector(m);
 
 }
 
@@ -611,13 +604,11 @@ void Torus(MeshType &m, float hRingRadius, float vRingRadius, int hRingDiv=24, i
 // this function build a mesh starting from a vector of generic coords (objects having a triple of float at their beginning)
 // and a vector of faces (objects having a triple of ints at theri beginning).
 template <class MeshType,class V, class F >
-void Build( MeshType & in, const V & v, const F & f)
+void BuildMeshFromCoordVectorIndexVector( MeshType & in, const V & v, const F & f)
 {
-  typedef typename MeshType::ScalarType ScalarType;
   typedef typename MeshType::CoordType CoordType;
   typedef typename MeshType::VertexPointer  VertexPointer;
   typedef typename MeshType::VertexIterator VertexIterator;
-  typedef typename MeshType::FaceIterator   FaceIterator;
 
   in.Clear();
   Allocator<MeshType>::AddVertices(in,v.size());
@@ -654,10 +645,10 @@ void Build( MeshType & in, const V & v, const F & f)
 
 
 template <class MeshType,class V>
-void Build( MeshType & in, const V & v)
+void BuildMeshFromCoordVector( MeshType & in, const V & v)
 {
   std::vector<Point3i> dummyfaceVec;
-  Build(in,v,dummyfaceVec);
+  BuildMeshFromCoordVectorIndexVector(in,v,dummyfaceVec);
 }
 
 
@@ -698,9 +689,6 @@ template <class MeshType>
 void Grid(MeshType & in, int w, int h, float wl, float hl, float *data=0)
 {
   typedef typename MeshType::CoordType CoordType;
-  typedef typename MeshType::VertexPointer  VertexPointer;
-  typedef typename MeshType::VertexIterator VertexIterator;
-  typedef typename MeshType::FaceIterator   FaceIterator;
 
   in.Clear();
   Allocator<MeshType>::AddVertices(in,w*h);
@@ -764,7 +752,7 @@ void FaceGrid(MeshType & in, int w, int h)
 template <class MeshType>
 void FaceGrid(MeshType & in, const std::vector<int> &grid, int w, int h)
 {
-    assert(in.vn == (int)in.vert.size()); // require a compact vertex vector
+    tri::RequireCompactness(in);
     assert(in.vn <= w*h); // the number of vertices should match the number of expected grid vertices
 
 //	    V0       V1
