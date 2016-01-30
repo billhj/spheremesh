@@ -150,6 +150,7 @@ void SphereMesh::drawSpheres()
 
 void SphereMesh::openMeshPLY(const std::string& filepath)
 {
+	if(filepath.empty()) return;
 	MyMesh* mesh = new MyMesh();
 	int b = vcg::tri::io::ImporterPLY<MyMesh>::Open(*mesh, filepath.c_str(), m_mask);
 	if(b)
@@ -157,8 +158,11 @@ void SphereMesh::openMeshPLY(const std::string& filepath)
 		std::cout<<vcg::tri::io::ImporterPLY<MyMesh>::ErrorMsg(b)<<std::endl;
 		//m_pmymesh = NULL;
 	}
-	//else
-	//{
+	if(b==1) 
+	{
+		m_pmymesh = NULL;
+		return;
+	}
 	if(m_pmymesh!=NULL) 
 	{
 		delete m_pmymesh;
@@ -175,6 +179,7 @@ void SphereMesh::saveMeshPLY(const std::string& filepath)
 
 void SphereMesh::openMeshOBJ(const std::string& filepath)
 {
+	if(filepath.empty()) return;
 	MyMesh* mesh = new MyMesh();
 	int b = vcg::tri::io::ImporterOBJ<MyMesh>::Open(*mesh, filepath.c_str(), m_mask);
 	if(b)
@@ -182,8 +187,11 @@ void SphereMesh::openMeshOBJ(const std::string& filepath)
 		std::cout<<vcg::tri::io::ImporterOBJ<MyMesh>::ErrorMsg(b)<<std::endl;
 		//m_pmymesh = NULL;
 	}
-	//else
-	//{
+	if(b==1) 
+	{
+		m_pmymesh = NULL;
+		return;
+	}
 	if(m_pmymesh!=NULL) 
 	{
 		delete m_pmymesh;
@@ -196,12 +204,18 @@ void SphereMesh::openMeshOBJ(const std::string& filepath)
 
 void SphereMesh::openMeshOFF(const std::string& filepath)
 {
+	if(filepath.empty()) return;
 	MyMesh* mesh = new MyMesh();
 	int b = vcg::tri::io::ImporterOFF<MyMesh>::Open(*mesh, filepath.c_str(), m_mask);
 	if(b)
 	{
 		std::cout<<vcg::tri::io::ImporterOFF<MyMesh>::ErrorMsg(b)<<std::endl;
 		//m_pmymesh = NULL;
+	}
+	if(b==1) 
+	{
+		m_pmymesh = NULL;
+		return;
 	}
 	//else
 	//{
