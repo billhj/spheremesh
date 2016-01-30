@@ -17,24 +17,27 @@ SMMainWindow::~SMMainWindow()
 #include <QFileDialog>
 void SMMainWindow::openOBJ()
 {
-	m_pWidget->m_pmesh = new SphereMesh(); 
+	SphereMesh* mesh = new SphereMesh();
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open OBJ"), "/", tr("Mesh Files (*.obj)"));
-	m_pWidget->m_pmesh->openMeshOBJ(fileName.toStdString());
-	m_pWidget->setSceneRadius(m_pWidget->m_pmesh->meshScale);
+	mesh->openMeshOBJ(fileName.toStdString());
+	m_pWidget->setSceneRadius(mesh->meshScale);
+	m_pWidget->m_pmesh = mesh;
 }
 
 void SMMainWindow::openOFF()
 {
-	m_pWidget->m_pmesh = new SphereMesh(); 
+	SphereMesh* mesh = new SphereMesh(); 
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open OFF"), "/", tr("Mesh Files (*.off)"));
-	m_pWidget->m_pmesh->openMeshOFF(fileName.toStdString());
-	m_pWidget->setSceneRadius(m_pWidget->m_pmesh->meshScale);
+	mesh->openMeshOFF(fileName.toStdString());
+	m_pWidget->setSceneRadius(mesh->meshScale);
+	m_pWidget->m_pmesh = mesh;
 }
 
 void SMMainWindow::openPLY()
 {
-	m_pWidget->m_pmesh = new SphereMesh(); 
+	SphereMesh* mesh = new SphereMesh();
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open PLY"), "/", tr("Mesh Files (*.ply)"));
-	m_pWidget->m_pmesh->openMeshPLY(fileName.toStdString());
-	m_pWidget->setSceneRadius(m_pWidget->m_pmesh->meshScale);
+	mesh->openMeshPLY(fileName.toStdString());
+	m_pWidget->setSceneRadius(mesh->meshScale);
+	m_pWidget->m_pmesh = mesh;
 }
