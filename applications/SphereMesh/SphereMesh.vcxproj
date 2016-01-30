@@ -55,47 +55,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\additionalinfo.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_3ds.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_ctm.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_dae.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_dxf.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_fbx.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_field.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_gts.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_idtf.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_iv.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_obj.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_off.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_ply.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_smf.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_stl.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_u3d.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_vmi.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\export_vrml.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_asc.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_ctm.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_dae.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_fbx.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_field.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_gts.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_nvm.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_obj.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_off.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_out.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_ply.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_ptx.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_raw.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_smf.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_stl.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\import_vmi.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\io_fan_tessellator.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\io_mask.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\io_material.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\io_ply.h" />
-    <ClInclude Include="..\..\extern\wrap\io_trimesh\precision.h" />
     <ClInclude Include="..\..\extern\wrap\ply\plylib.h" />
     <ClInclude Include="..\..\extern\wrap\ply\plystuff.h" />
     <ClInclude Include="GeneratedFiles\ui_SMMainWindow.h" />

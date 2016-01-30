@@ -12,7 +12,11 @@ class SMMainWindow : public QMainWindow
 public:
 	SMMainWindow(QWidget *parent = 0);
 	~SMMainWindow();
-
+public slots:
+	void openOBJ();
+	void openOFF();
+	void openPLY();
+	
 private:
 	Ui::SMMainWindow ui;
 	MeshViewer* m_pWidget;
