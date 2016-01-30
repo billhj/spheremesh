@@ -18,6 +18,7 @@ SphereMesh::~SphereMesh(void)
 void SphereMesh::draw()
 {
 	drawMesh();
+	drawSpheres();
 }
 
 void SphereMesh::drawMesh()
@@ -125,6 +126,25 @@ void SphereMesh::drawMesh()
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glPopAttrib();
 		}
+	}
+}
+
+void SphereMesh::drawSpheres()
+{
+	for(unsigned int i = 0; i < m_sphereset.size(); ++i)
+	{
+		if(m_sphereset[i] != NULL)
+		{
+			if(m_drawmode==DMSmooth)
+			{
+				m_sphereset[i]->drawFill();
+			}
+			else if(m_drawmode==DMWire)
+			{
+				m_sphereset[i]->drawWireFrame();
+			}
+		}
+		
 	}
 }
 

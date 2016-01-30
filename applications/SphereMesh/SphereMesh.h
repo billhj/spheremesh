@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 #include<vcg/complex/complex.h>
+
+#include "Sphere.h"
+
 class MyVertex; class MyEdge; class MyFace;
 struct MyUsedTypes : public vcg::UsedTypes<vcg::Use<MyVertex>   ::AsVertexType,
                                            vcg::Use<MyEdge>     ::AsEdgeType,
@@ -19,6 +22,7 @@ public:
 	~SphereMesh(void);
 	void draw();
 	void drawMesh();
+	void drawSpheres();
 	void openMeshPLY(const std::string& filepath);
 	void saveMeshPLY(const std::string& filepath);
 
@@ -35,5 +39,7 @@ public:
 	unsigned int array_buffers[3];
 	float meshScale;
 	DrawMode m_drawmode; // Current DrawMode
+
+	SphereSet m_sphereset;
 };
 
