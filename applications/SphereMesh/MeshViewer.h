@@ -2,6 +2,7 @@
 #define MESHVIEWER_H
 
 #include <QGLViewer/qglviewer.h>
+#include "SphereMesh.h"
 
 class MeshViewer : public QGLViewer
 {
@@ -14,6 +15,7 @@ public:
 	void init();
 	void draw();
 
+	SphereMesh* m_pmesh;
 };
 
 #endif // MESHVIEWER_H

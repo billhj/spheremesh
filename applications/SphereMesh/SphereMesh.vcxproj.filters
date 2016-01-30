@@ -54,6 +54,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_MeshViewer.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="SphereMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="SMMainWindow.h">
@@ -69,6 +72,9 @@
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_SMMainWindow.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereMesh.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

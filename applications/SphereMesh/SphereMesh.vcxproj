@@ -26,6 +26,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MeshViewer.cpp" />
     <ClCompile Include="SMMainWindow.cpp" />
+    <ClCompile Include="SphereMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="SMMainWindow.h">
@@ -54,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_SMMainWindow.h" />
+    <ClInclude Include="SphereMesh.h" />
     <CustomBuild Include="MeshViewer.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing MeshViewer.h...</Message>
