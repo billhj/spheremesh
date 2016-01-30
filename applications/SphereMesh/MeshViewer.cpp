@@ -1,3 +1,4 @@
+#include <GL/glew.h>
 #include "MeshViewer.h"
 
 MeshViewer::MeshViewer(QWidget *parent)
@@ -17,6 +18,16 @@ void MeshViewer::clear()
 
 void MeshViewer::init()
 {
+	GLenum errorEnum = glewInit();
+	std::cout<<"glew init"<<std::endl;
+	const char* str = (char*)glewGetString(GLEW_VERSION);               // check NULL return value
+	if ( GLEW_OK != errorEnum ) {
+		std::cout<< "Error Initializing Glew: " << glewGetErrorString( errorEnum ) << std::endl;
+		assert( 0 );
+		exit( 1 );
+		return;
+	}
+
 	setMouseTracking(true);
 	setFocusPolicy(Qt::StrongFocus);
 	setShortcut(DISPLAY_FPS,Qt::CTRL+Qt::Key_F);
@@ -36,7 +47,7 @@ void MeshViewer::init()
 
 void MeshViewer::draw()
 {
-	if(!m_pmesh)
+	if(m_pmesh)
 	{
 		m_pmesh->draw();
 	}
