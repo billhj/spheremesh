@@ -32,6 +32,7 @@ public:
 	void loadSpheres(const std::string& filepath);
 
 
+	void computeNIterations(int n);
 	void computeOneIteration();
 	void compute();
 

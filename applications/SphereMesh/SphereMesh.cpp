@@ -279,6 +279,11 @@ void SphereMesh::loadSpheres(const std::string& filepath)
 
 }
 
+void SphereMesh::computeNIterations(int n)
+{
+
+	update();
+}
 
 void SphereMesh::computeOneIteration()
 {
