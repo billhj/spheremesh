@@ -3,7 +3,7 @@
 #include <wrap/io_trimesh/export.h>
 #include <GL/glew.h>
 
-SphereMesh::SphereMesh(void) : m_pmymesh(NULL), m_mask(0), m_drawmode(DMHidden)
+SphereMesh::SphereMesh(void) : m_pmymesh(NULL), m_mask(0), m_drawmode(DMSmooth)
 {
 	array_buffers[0] = 0;
 	array_buffers[1] = 0;
@@ -108,7 +108,7 @@ void SphereMesh::drawMesh()
 			glDisable(GL_POLYGON_OFFSET_FILL);
 			glEnable(GL_LIGHTING);
 			glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-			//glDepthRange(0.0f,1.0f-ZTWIST);
+			////glDepthRange(0.0f,1.0f-ZTWIST);
 			glColor4f(1,0,1,0.5);
 			glEnableClientState (GL_NORMAL_ARRAY);
 			glEnableClientState (GL_VERTEX_ARRAY);
