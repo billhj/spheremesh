@@ -278,3 +278,10 @@ void SphereMesh::loadSpheres(const std::string& filepath)
 {
 
 }
+
+void SphereMesh::compute()
+{
+
+
+	update();
+}
