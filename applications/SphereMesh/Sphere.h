@@ -28,4 +28,14 @@ struct SphereSet //: public std::vector<Sphere*>
 {
 	std::vector<Sphere*> m_spheres;
 	std::vector<SphereEdge*> m_edegs;
+
+	int getSphereIndex(Sphere* sphere)
+	{
+		return (&sphere - &m_spheres[0]) /  sizeof(Sphere*);
+	}
+
+	int getSphereEdgeIndex(SphereEdge* sphereedge)
+	{
+		return (&sphereedge - &m_edegs[0]) /  sizeof(SphereEdge*);
+	}
 };
