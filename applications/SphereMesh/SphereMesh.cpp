@@ -3,7 +3,7 @@
 #include <wrap/io_trimesh/export.h>
 #include <GL/glew.h>
 
-SphereMesh::SphereMesh(void) : m_pmymesh(NULL), m_mask(0), m_drawmode(DMSmooth)
+SphereMesh::SphereMesh(void) : m_pmymesh(NULL), m_mask(0), m_drawmode(DMHidden)
 {
 	array_buffers[0] = 0;
 	array_buffers[1] = 0;
@@ -86,13 +86,12 @@ void SphereMesh::drawMesh()
 		}
 		else if(m_drawmode==DMHidden)
 		{
-			glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_LIGHTING_BIT );
-			glEnable(GL_POLYGON_OFFSET_FILL);
-			glPolygonOffset(1.0, 1);
+			//glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_LIGHTING_BIT );
+			
 			//glDepthRange(ZTWIST,1.0f);
-			glDisable(GL_LIGHTING);
-			glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
-			glColor4f(0,0,1,0.5);
+			//glDisable(GL_LIGHTING);
+			//glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
+			glColor4f(0,0,1,1);
 			glEnableClientState (GL_NORMAL_ARRAY);
 			glEnableClientState (GL_VERTEX_ARRAY);
 
@@ -106,9 +105,15 @@ void SphereMesh::drawMesh()
 			glDisableClientState (GL_VERTEX_ARRAY);
 			glDisableClientState (GL_NORMAL_ARRAY);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glDisable(GL_POLYGON_OFFSET_FILL);
-			glEnable(GL_LIGHTING);
-			glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
+			//glDisable(GL_POLYGON_OFFSET_FILL);
+			//glEnable(GL_LIGHTING);
+
+
+
+
+			//glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
+			//glEnable(GL_POLYGON_OFFSET_FILL);
+			//glPolygonOffset(0.1, 0.1);
 			////glDepthRange(0.0f,1.0f-ZTWIST);
 			glColor4f(1,0,1,0.5);
 			glEnableClientState (GL_NORMAL_ARRAY);
@@ -124,24 +129,24 @@ void SphereMesh::drawMesh()
 			glDisableClientState (GL_VERTEX_ARRAY);
 			glDisableClientState (GL_NORMAL_ARRAY);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glPopAttrib();
+			//glPopAttrib();
 		}
 	}
 }
 
 void SphereMesh::drawSpheres()
 {
-	for(unsigned int i = 0; i < m_sphereset.size(); ++i)
+	for(unsigned int i = 0; i < m_sphereset.m_spheres.size(); ++i)
 	{
-		if(m_sphereset[i] != NULL)
+		if(m_sphereset.m_spheres[i] != NULL)
 		{
 			if(m_drawmode==DMSmooth)
 			{
-				m_sphereset[i]->drawFill();
+				m_sphereset.m_spheres[i]->drawFill();
 			}
 			else if(m_drawmode==DMWire)
 			{
-				m_sphereset[i]->drawWireFrame();
+				m_sphereset.m_spheres[i]->drawWireFrame();
 			}
 		}
 		

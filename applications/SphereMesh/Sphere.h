@@ -12,5 +12,9 @@ public:
 	float m_radius;
 };
 
-typedef std::vector<Sphere*> SphereSet;
 
+struct SphereSet //: public std::vector<Sphere*>
+{
+	std::vector<Sphere*> m_spheres;
+	std::vector<std::pair<Sphere*, Sphere*>> m_edegs;
+};
