@@ -2,8 +2,11 @@
 #include <GL/glew.h>
 #include "wrap/gl/gl_geometry.h"
 
-Sphere::Sphere(void)
+Sphere::Sphere(void) : m_radius(0)
 {
+	m_center[0] = 0;
+	m_center[1] = 0;
+	m_center[2] = 0;
 }
 
 
