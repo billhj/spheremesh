@@ -57,3 +57,13 @@ void SMMainWindow::openSpheres()
 	}
 	m_pWidget->m_mesh.loadSpheres(fileName.toStdString());
 }
+
+void SMMainWindow::algo_sphereSimplificationOneStep()
+{
+	m_pWidget->m_mesh.computeOneIteration();
+}
+
+void SMMainWindow::algo_sphereSimplificationAllSteps()
+{
+	m_pWidget->m_mesh.compute();
+}

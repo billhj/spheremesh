@@ -17,6 +17,8 @@ public slots:
 	void openOFF();
 	void openPLY();
 	void openSpheres();
+	void algo_sphereSimplificationOneStep();
+	void algo_sphereSimplificationAllSteps();
 private:
 	Ui::SMMainWindow ui;
 	MeshViewer* m_pWidget;
