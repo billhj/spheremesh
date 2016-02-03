@@ -36,7 +36,7 @@ void Sphere::drawWireFrame()
 	glPopMatrix();
 }
 
-
+float sphereScale = 1.0/100000000.0;
 void SphereSet::readSpheresFromFile(const std::string& filename)
 {
 	std::string line;
@@ -60,16 +60,16 @@ void SphereSet::readSpheresFromFile(const std::string& filename)
 			Sphere* newSphere = new Sphere();
 
 			lineData >> newSphere->m_center[0];
-			newSphere->m_center[0] = newSphere->m_center[0] / 100000000;
+			newSphere->m_center[0] = newSphere->m_center[0] * sphereScale;
 
 			lineData >> newSphere->m_center[1];
-			newSphere->m_center[1] = newSphere->m_center[1] / 100000000;
+			newSphere->m_center[1] = newSphere->m_center[1] * sphereScale;
 
 			lineData >> newSphere->m_center[2];
-			newSphere->m_center[2] = newSphere->m_center[2] / 100000000;
+			newSphere->m_center[2] = newSphere->m_center[2] * sphereScale;
 
 			lineData >> newSphere->m_radius;
-			newSphere->m_radius = newSphere->m_radius / 100000000;
+			newSphere->m_radius = newSphere->m_radius * sphereScale;
 
 			m_spheres.push_back(newSphere);
 		}
