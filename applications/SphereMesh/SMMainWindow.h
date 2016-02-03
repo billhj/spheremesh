@@ -16,7 +16,7 @@ public slots:
 	void openOBJ();
 	void openOFF();
 	void openPLY();
-	
+	void openSpheres();
 private:
 	Ui::SMMainWindow ui;
 	MeshViewer* m_pWidget;

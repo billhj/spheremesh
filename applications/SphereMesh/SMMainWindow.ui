@@ -34,6 +34,8 @@
      <addaction name="actionOBJ"/>
      <addaction name="actionOFF"/>
      <addaction name="actionPLY"/>
+     <addaction name="separator"/>
+     <addaction name="actionSpheres"/>
     </widget>
     <addaction name="menuOpen_2"/>
    </widget>
@@ -63,6 +65,11 @@
     <string>PLY</string>
    </property>
   </action>
+  <action name="actionSpheres">
+   <property name="text">
+    <string>Spheres</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
@@ -74,8 +81,8 @@
    <slot>openOBJ()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>199</x>
-     <y>149</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>199</x>
@@ -115,10 +122,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionSpheres</sender>
+   <signal>triggered()</signal>
+   <receiver>SMMainWindow</receiver>
+   <slot>openSpheres()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openOBJ()</slot>
   <slot>openOFF()</slot>
   <slot>openPLY()</slot>
+  <slot>openSpheres()</slot>
  </slots>
 </ui>

@@ -30,6 +30,7 @@ public:
 	void openMeshOFF(const std::string& filepath);
 
 	void loadSpheres(const std::string& filepath);
+	void saveSpheres(const std::string& filepath);
 
 
 	void computeNIterations(int n);

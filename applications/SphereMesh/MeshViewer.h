@@ -15,7 +15,7 @@ public:
 	void init();
 	void draw();
 
-	SphereMesh* m_pmesh;
+	SphereMesh m_mesh;
 };
 
 #endif // MESHVIEWER_H

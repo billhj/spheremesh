@@ -2,7 +2,7 @@
 #include "MeshViewer.h"
 
 MeshViewer::MeshViewer(QWidget *parent)
-	: QGLViewer(parent), m_pmesh(NULL)
+	: QGLViewer(parent)
 {
 }
 
@@ -48,8 +48,5 @@ void MeshViewer::init()
 void MeshViewer::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	if(m_pmesh)
-	{
-		m_pmesh->draw();
-	}
+	m_mesh.draw();
 }

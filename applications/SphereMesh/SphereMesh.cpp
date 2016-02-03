@@ -148,6 +148,10 @@ void SphereMesh::drawSpheres()
 			{
 				m_sphereset.m_spheres[i]->drawWireFrame();
 			}
+			else
+			{
+				m_sphereset.m_spheres[i]->drawFill();
+			}
 		}
 		
 	}
@@ -281,7 +285,14 @@ void SphereMesh::clear()
 
 void SphereMesh::loadSpheres(const std::string& filepath)
 {
+	if(filepath.empty()) return;
+	m_sphereset.readSpheresFromFile(filepath);
+}
 
+void SphereMesh::saveSpheres(const std::string& filepath)
+{
+	if(filepath.empty()) return;
+	m_sphereset.saveSpheresToFile(filepath);
 }
 
 void SphereMesh::computeNIterations(int n)
