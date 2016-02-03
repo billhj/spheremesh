@@ -37,6 +37,9 @@ public:
 	void computeOneIteration();
 	void compute();
 
+	void simplifySphereOneStep();
+	void simplifySphereAllSteps();
+
 	void init();
 	void update();
 	void clear();

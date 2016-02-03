@@ -313,3 +313,13 @@ void SphereMesh::compute()
 
 	update();
 }
+
+void SphereMesh::simplifySphereOneStep()
+{
+
+}
+
+void SphereMesh::simplifySphereAllSteps()
+{
+
+}

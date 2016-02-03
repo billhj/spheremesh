@@ -60,10 +60,10 @@ void SMMainWindow::openSpheres()
 
 void SMMainWindow::algo_sphereSimplificationOneStep()
 {
-	m_pWidget->m_mesh.computeOneIteration();
+	m_pWidget->m_mesh.simplifySphereOneStep();
 }
 
 void SMMainWindow::algo_sphereSimplificationAllSteps()
 {
-	m_pWidget->m_mesh.compute();
+	m_pWidget->m_mesh.simplifySphereAllSteps();
 }
