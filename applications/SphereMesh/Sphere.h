@@ -39,6 +39,7 @@ struct SphereSet //: public std::vector<Sphere*>
 	{
 		return (&sphereedge - &m_edegs[0]) /  sizeof(SphereEdge*);
 	}
+	void clear();
 
 	void readSpheresFromFile(const std::string& filename);
 	void saveSpheresToFile(const std::string& filename);

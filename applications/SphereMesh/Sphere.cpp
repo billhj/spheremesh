@@ -36,6 +36,18 @@ void Sphere::drawWireFrame()
 	glPopMatrix();
 }
 
+void SphereSet::clear()
+{
+	for(unsigned int i = 0; i < m_spheres.size(); ++i)
+	{
+		if(m_spheres[i] != NULL)
+		{
+			delete m_spheres[i];
+		}
+	}
+	m_spheres.clear();
+}
+
 float sphereScale = 1.0/100000000.0;
 void SphereSet::readSpheresFromFile(const std::string& filename)
 {
@@ -43,6 +55,7 @@ void SphereSet::readSpheresFromFile(const std::string& filename)
 	std::ifstream myfile (filename);
 	if (myfile.is_open())
 	{
+		clear();
 		getline(myfile,line);
 		std::stringstream lineData(line);
 		int nb = 0;
