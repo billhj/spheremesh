@@ -11,6 +11,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SphereMesh", "..\..\applica
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EtoileAppTemplate", "..\..\applications\EtoileAppTemplate\EtoileAppTemplate.vcxproj", "{AE463159-C094-4219-9C70-F61CC79AE7BA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cudaraster", "..\..\applications\cudaraster\cudaraster.vcxproj", "{8E0B71BD-6F14-4F0C-AC34-45334875453F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "framework", "..\..\applications\cudaraster\framework.vcxproj", "{8E0B71BD-6F14-4F0C-AC34-45985043856F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "crsample", "..\..\applications\cudaraster\crsample.vcxproj", "{EC32C587-08D5-4F90-8E47-453748674524}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cudaRasterizerSimple", "..\..\applications\cudaRasterizerSimple\cudaRasterizerSimple.vcxproj", "{ECFA3772-04E8-4C05-B37B-889EC13E38EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -55,6 +63,36 @@ Global
 		{AE463159-C094-4219-9C70-F61CC79AE7BA}.Release|Win32.ActiveCfg = Release|Win32
 		{AE463159-C094-4219-9C70-F61CC79AE7BA}.Release|Win32.Build.0 = Release|Win32
 		{AE463159-C094-4219-9C70-F61CC79AE7BA}.Release|x64.ActiveCfg = Release|Win32
+		{8E0B71BD-6F14-4F0C-AC34-45334875453F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8E0B71BD-6F14-4F0C-AC34-45334875453F}.Debug|Win32.Build.0 = Debug|Win32
+		{8E0B71BD-6F14-4F0C-AC34-45334875453F}.Debug|x64.ActiveCfg = Debug|x64
+		{8E0B71BD-6F14-4F0C-AC34-45334875453F}.Debug|x64.Build.0 = Debug|x64
+		{8E0B71BD-6F14-4F0C-AC34-45334875453F}.Release|Win32.ActiveCfg = Release|Win32
+		{8E0B71BD-6F14-4F0C-AC34-45334875453F}.Release|Win32.Build.0 = Release|Win32
+		{8E0B71BD-6F14-4F0C-AC34-45334875453F}.Release|x64.ActiveCfg = Release|x64
+		{8E0B71BD-6F14-4F0C-AC34-45334875453F}.Release|x64.Build.0 = Release|x64
+		{8E0B71BD-6F14-4F0C-AC34-45985043856F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8E0B71BD-6F14-4F0C-AC34-45985043856F}.Debug|Win32.Build.0 = Debug|Win32
+		{8E0B71BD-6F14-4F0C-AC34-45985043856F}.Debug|x64.ActiveCfg = Debug|x64
+		{8E0B71BD-6F14-4F0C-AC34-45985043856F}.Debug|x64.Build.0 = Debug|x64
+		{8E0B71BD-6F14-4F0C-AC34-45985043856F}.Release|Win32.ActiveCfg = Release|Win32
+		{8E0B71BD-6F14-4F0C-AC34-45985043856F}.Release|Win32.Build.0 = Release|Win32
+		{8E0B71BD-6F14-4F0C-AC34-45985043856F}.Release|x64.ActiveCfg = Release|x64
+		{8E0B71BD-6F14-4F0C-AC34-45985043856F}.Release|x64.Build.0 = Release|x64
+		{EC32C587-08D5-4F90-8E47-453748674524}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EC32C587-08D5-4F90-8E47-453748674524}.Debug|Win32.Build.0 = Debug|Win32
+		{EC32C587-08D5-4F90-8E47-453748674524}.Debug|x64.ActiveCfg = Debug|x64
+		{EC32C587-08D5-4F90-8E47-453748674524}.Debug|x64.Build.0 = Debug|x64
+		{EC32C587-08D5-4F90-8E47-453748674524}.Release|Win32.ActiveCfg = Release|Win32
+		{EC32C587-08D5-4F90-8E47-453748674524}.Release|Win32.Build.0 = Release|Win32
+		{EC32C587-08D5-4F90-8E47-453748674524}.Release|x64.ActiveCfg = Release|x64
+		{EC32C587-08D5-4F90-8E47-453748674524}.Release|x64.Build.0 = Release|x64
+		{ECFA3772-04E8-4C05-B37B-889EC13E38EE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ECFA3772-04E8-4C05-B37B-889EC13E38EE}.Debug|Win32.Build.0 = Debug|Win32
+		{ECFA3772-04E8-4C05-B37B-889EC13E38EE}.Debug|x64.ActiveCfg = Debug|Win32
+		{ECFA3772-04E8-4C05-B37B-889EC13E38EE}.Release|Win32.ActiveCfg = Release|Win32
+		{ECFA3772-04E8-4C05-B37B-889EC13E38EE}.Release|Win32.Build.0 = Release|Win32
+		{ECFA3772-04E8-4C05-B37B-889EC13E38EE}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -316,6 +316,13 @@ void CudaRaster::drawTriangles(void)
     m_deferredClear = false;
 }
 
+
+void CudaRaster::drawSpheres(void)
+{
+
+
+}
+
 //------------------------------------------------------------------------
 
 CudaRaster::Stats CudaRaster::getStats(void)

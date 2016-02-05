@@ -77,6 +77,8 @@ public:
     void                    setIndexBuffer          (Buffer* buf, S64 ofs, int numTris);
 	void			        drawTriangles			(void);                                         // Draw all triangles specified by the current index buffer.
 
+	void			        drawSpheres			(void);                                         // Draw all spheres specified by the current vertex buffer.
+
     Stats                   getStats                (void);
     String                  getProfilingInfo        (void);                                         // See CR_PROFILING_MODE in PixelPipe.hpp.
     void                    setDebugParams          (const DebugParams& p);
