@@ -32,6 +32,12 @@ __host__ __device__ void getAABBForTriangle(triangle tri, glm::vec3& minpoint, g
 }
 
 
+__host__ __device__ void getAABBForSphere(sphere sp, glm::vec3& minpoint, glm::vec3& maxpoint){
+	minpoint = glm::vec3(sp.center.x - sp.r, sp.center.y - sp.r, sp.center.z - sp.r);
+  maxpoint = glm::vec3(sp.center.x + sp.r, sp.center.y + sp.r, sp.center.z + sp.r);
+}
+
+
 //LOOK: finds the axis aligned bounding box for a given triangle
 __host__ __device__ void getCompact2DAABBForTriangle(triangle tri, glm::vec4& minXminYmaxXmaxY){
   minXminYmaxXmaxY = glm::vec4(glm::min(glm::min(tri.v0.pos.x, tri.v1.pos.x),tri.v2.pos.x), 
@@ -61,6 +67,7 @@ __host__ __device__ glm::vec3 calculateBarycentricCoordinate(triangle tri, glm::
   return glm::vec3(alpha,beta,gamma);
 }
 
+
 //LOOK: checks if a barycentric coordinate is within the boundaries of a triangle
 __host__ __device__ bool isBarycentricCoordInBounds(glm::vec3 barycentricCoord){
    return barycentricCoord.x >= 0.0 && barycentricCoord.x <= 1.0 &&
@@ -87,6 +94,20 @@ __host__ __device__ void transformTriToScreenSpace(triangle &tri, glm::vec2 reso
 	tri.v0.pos.z = (tri.v0.pos.z+1.0)*0.5f;
 	tri.v1.pos.z = (tri.v1.pos.z+1.0)*0.5f;
 	tri.v2.pos.z = (tri.v2.pos.z+1.0)*0.5f;
+}
+
+//Converts a sphere center from clip space to a screen resolution mapped space 
+//From (-1:1,-1:1,-1:1) to (0:w, 0:h, 0:1)
+__host__ __device__ void transformSphereToScreenSpace(sphere &sp, glm::vec2 resolution)
+{
+	//Scale and shift x
+	sp.center.x = (sp.center.x+1.0)*0.5f*resolution.x;
+	//Scale and shift y
+	sp.center.y = (sp.center.y+1.0)*0.5f*resolution.y;
+	//Scale and shift z
+	sp.center.z = (sp.center.z+1.0)*0.5f;
+
+	sp.r = (sp.r+1.0)*0.5f;
 }
 
 //Returns true if the AABB defined by these two points overlaps with clip region (-1:1, -1:1, -1:1)

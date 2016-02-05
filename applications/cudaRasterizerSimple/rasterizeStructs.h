@@ -16,6 +16,11 @@ struct triangle {
 	vertex v2;
 };
 
+struct sphere {
+	glm::vec3 center;  //center
+	float r;
+};
+
 struct fragment{
 	//Together this is a 64-bit depth sortable tag
 	union{

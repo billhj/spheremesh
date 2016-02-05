@@ -354,6 +354,81 @@ __global__ void rasterizationKernel(triangle* primitives, int* primitiveStageBuf
 }
 
 
+//TODO: Do this a lot more efficiently and in parallel
+__global__ void rasterizationKernelSphere(sphere* primitives, int* primitiveStageBuffer, int primitivesCount, fragment* depthbuffer, 
+									glm::vec2 resolution, uniforms* u_variables, pipelineOpts opts)
+{
+	int index = (blockIdx.x * blockDim.x) + threadIdx.x;
+	if(index<primitivesCount){
+		int triIndex = primitiveStageBuffer[index];
+		if(triIndex >= 0){
+
+
+			//For each primitive
+			//Load triangle localy
+			transformSphereToScreenSpace(primitives[triIndex], resolution);
+			
+			sphere sp = primitives[triIndex];
+
+			//AABB for triangle
+			glm::vec3 minPoint;
+			glm::vec3 maxPoint;
+			getAABBForSphere(sp, minPoint, maxPoint);
+
+
+			//Compute pixel range
+			//Do some per-fragment clipping and restrict to screen space
+			int minX = glm::max(glm::floor(minPoint.x),0.0f);
+			int maxX = glm::min(glm::ceil(maxPoint.x),resolution.x);
+			int minY = glm::max(glm::floor(minPoint.y),0.0f);
+			int maxY = glm::min(glm::ceil(maxPoint.y),resolution.y);
+
+
+			fragment frag;
+			frag.primitiveIndex = index;
+			//TODO: Do something more efficient than this
+			float rsq = sp.r * sp.r;
+			for(int x = minX; x <= maxX; ++x)
+			{
+				for(int y = minY; y <= maxY; ++y)
+				{
+					int dbindex = getDepthBufferIndex(x,y,resolution);
+					if(dbindex < 0)
+						continue;
+
+					frag.position.x = x;
+					frag.position.y = y;
+
+					glm::vec2 dis2 = glm::vec2(x,y) - glm::vec2(sp.center.x, sp.center.y);
+					float dis = dis2.length();
+
+					if(dis < sp.r)
+					{
+						//Blend values.
+						frag.depth = sp.center.z - glm::sqrt(rsq - dis * dis);
+						if(frag.depth > 0.0f && frag.depth < 1.0f)
+						{
+							//Only continue if pixel is in screen.
+							//TODO
+							//frag.color = tri.v0.color*bCoords.x+tri.v1.color*bCoords.y+tri.v2.color*bCoords.z;
+							frag.normal = glm::normalize(glm::vec3(x, y, frag.depth) - sp.center);
+							//frag.lightDir = glm::normalize(tri.v0.eyeLightDirection*bCoords.x+tri.v1.eyeLightDirection*bCoords.y+tri.v2.eyeLightDirection*bCoords.z);
+							//frag.halfVector = glm::normalize(tri.v0.eyeHalfVector*bCoords.x+tri.v1.eyeHalfVector*bCoords.y+tri.v2.eyeHalfVector*bCoords.z);
+
+
+							fatomicMin(&(depthbuffer[dbindex].depthPrimTag),frag.depthPrimTag);
+
+							if(frag.depthPrimTag == depthbuffer[dbindex].depthPrimTag)//If this is true, we won the race condition
+								writeToDepthbuffer(x,y,frag, depthbuffer,resolution);
+
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 __host__ __device__ void depthFSImpl(fragment* depthbuffer, int index,  uniforms* u_variables, pipelineOpts opts)
 {
 	float depth = depthbuffer[index].depth;
