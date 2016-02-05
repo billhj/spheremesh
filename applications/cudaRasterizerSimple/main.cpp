@@ -24,6 +24,12 @@ int main(int argc, char** argv){
 		}
 	}
 
+	mesh = new obj();
+			objLoader* loader = new objLoader("C:\\Users\\Jing\\Documents\\svn\\spheremesh\\trunk\\bin\\objs\\cow.obj", mesh);
+			mesh->buildVBOs();
+			delete loader;
+			loadedScene = true;
+
 	if(!loadedScene){
 		cout << "Usage: mesh=[obj file]" << endl;
 		return 0;
@@ -78,7 +84,7 @@ int main(int argc, char** argv){
 	initTextures();
 
 	GLuint passthroughProgram;
-	passthroughProgram = initShader("shaders/passthroughVS.glsl", "shaders/passthroughFS.glsl");
+	passthroughProgram = initShader("C:\\Users\\Jing\\Documents\\svn\\spheremesh\\trunk\\bin\\shaders\\passthroughVS.glsl", "C:\\Users\\Jing\\Documents\\svn\\spheremesh\\trunk\\bin\\shaders\\passthroughFS.glsl");
 
 	glUseProgram(passthroughProgram);
 	glActiveTexture(GL_TEXTURE0);
