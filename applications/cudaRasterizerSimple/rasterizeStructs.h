@@ -19,6 +19,7 @@ struct triangle {
 struct sphere {
 	glm::vec3 center;  //center
 	float r;
+	glm::vec3 color;
 };
 
 struct fragment{

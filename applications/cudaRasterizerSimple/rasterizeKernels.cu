@@ -12,6 +12,7 @@ float* device_cbo;
 int* device_ibo;
 vertex* verticies;
 triangle* primitives;
+sphere* spheres;
 int* primitiveStageBuffer;
 uniforms* device_uniforms;
 
@@ -354,80 +355,6 @@ __global__ void rasterizationKernel(triangle* primitives, int* primitiveStageBuf
 }
 
 
-//TODO: Do this a lot more efficiently and in parallel
-__global__ void rasterizationKernelSphere(sphere* primitives, int* primitiveStageBuffer, int primitivesCount, fragment* depthbuffer, 
-									glm::vec2 resolution, uniforms* u_variables, pipelineOpts opts)
-{
-	int index = (blockIdx.x * blockDim.x) + threadIdx.x;
-	if(index<primitivesCount){
-		int triIndex = primitiveStageBuffer[index];
-		if(triIndex >= 0){
-
-
-			//For each primitive
-			//Load triangle localy
-			transformSphereToScreenSpace(primitives[triIndex], resolution);
-			
-			sphere sp = primitives[triIndex];
-
-			//AABB for triangle
-			glm::vec3 minPoint;
-			glm::vec3 maxPoint;
-			getAABBForSphere(sp, minPoint, maxPoint);
-
-
-			//Compute pixel range
-			//Do some per-fragment clipping and restrict to screen space
-			int minX = glm::max(glm::floor(minPoint.x),0.0f);
-			int maxX = glm::min(glm::ceil(maxPoint.x),resolution.x);
-			int minY = glm::max(glm::floor(minPoint.y),0.0f);
-			int maxY = glm::min(glm::ceil(maxPoint.y),resolution.y);
-
-
-			fragment frag;
-			frag.primitiveIndex = index;
-			//TODO: Do something more efficient than this
-			float rsq = sp.r * sp.r;
-			for(int x = minX; x <= maxX; ++x)
-			{
-				for(int y = minY; y <= maxY; ++y)
-				{
-					int dbindex = getDepthBufferIndex(x,y,resolution);
-					if(dbindex < 0)
-						continue;
-
-					frag.position.x = x;
-					frag.position.y = y;
-
-					glm::vec2 dis2 = glm::vec2(x,y) - glm::vec2(sp.center.x, sp.center.y);
-					float dis = dis2.length();
-
-					if(dis < sp.r)
-					{
-						//Blend values.
-						frag.depth = sp.center.z - glm::sqrt(rsq - dis * dis);
-						if(frag.depth > 0.0f && frag.depth < 1.0f)
-						{
-							//Only continue if pixel is in screen.
-							//TODO
-							//frag.color = tri.v0.color*bCoords.x+tri.v1.color*bCoords.y+tri.v2.color*bCoords.z;
-							frag.normal = glm::normalize(glm::vec3(x, y, frag.depth) - sp.center);
-							//frag.lightDir = glm::normalize(tri.v0.eyeLightDirection*bCoords.x+tri.v1.eyeLightDirection*bCoords.y+tri.v2.eyeLightDirection*bCoords.z);
-							//frag.halfVector = glm::normalize(tri.v0.eyeHalfVector*bCoords.x+tri.v1.eyeHalfVector*bCoords.y+tri.v2.eyeHalfVector*bCoords.z);
-
-
-							fatomicMin(&(depthbuffer[dbindex].depthPrimTag),frag.depthPrimTag);
-
-							if(frag.depthPrimTag == depthbuffer[dbindex].depthPrimTag)//If this is true, we won the race condition
-								writeToDepthbuffer(x,y,frag, depthbuffer,resolution);
-
-						}
-					}
-				}
-			}
-		}
-	}
-}
 
 __host__ __device__ void depthFSImpl(fragment* depthbuffer, int index,  uniforms* u_variables, pipelineOpts opts)
 {
@@ -1017,6 +944,269 @@ void cudaRasterizeCore(uchar4* PBOpos, glm::vec2 resolution, float frame, float*
 		//Calculate metrics
 		//TODO: Add more metrics
 		calculateMetrics(metrics, primitives, primitiveStageBuffer, NPrimitives, resolution, primitiveBlocks, tileSize, opts);
+
+	}
+
+	//------------------------------
+	//fragment shader
+	//------------------------------
+	fragmentShadeKernel<<<fullBlocksPerGrid, threadsPerBlock>>>(depthbuffer, resolution, device_uniforms, opts);
+
+	cudaDeviceSynchronize();
+	checkCUDAError("Kernel failed FS!");
+	//------------------------------
+	//write fragments to framebuffer
+	//------------------------------
+	render<<<fullBlocksPerGrid, threadsPerBlock>>>(resolution, depthbuffer, framebuffer);
+	sendImageToPBO<<<fullBlocksPerGrid, threadsPerBlock>>>(PBOpos, resolution, framebuffer);
+
+	cudaDeviceSynchronize();
+
+	kernelCleanup();
+
+	checkCUDAError("Kernel failed!");
+}
+
+//close to vertex
+__global__ void sphereCenterShadeKernel(float* vbo, int vbosize,  float* cbo, int cbosize,  sphere* sp, uniforms* u_variables, pipelineOpts opts){
+	int index = (blockIdx.x * blockDim.x) + threadIdx.x;
+	if(index<vbosize/4){
+		sphere vOut;
+
+		glm::vec4 vertexEyePos = glm::vec4(vbo[index*4+0],vbo[index*4+1],vbo[index*4+2],1.0);
+		vertexEyePos = u_variables->viewTransform*u_variables->modelTransform*vertexEyePos;
+
+		//Compute lighting vectors
+		/*glm::vec4 eyeLightPos = u_variables->viewTransform*u_variables->lightPos;
+		glm::vec4 eyeLightDir = (eyeLightPos - vertexEyePos);
+		glm::vec4 halfVector = (eyeLightDir - vertexEyePos);*/
+
+		//Normals are in eye space
+	/*	glm::vec4 vertexEyeNorm = glm::vec4(nbo[index*3+0],nbo[index*3+1],nbo[index*3+2],0.0);
+		vertexEyeNorm = u_variables->viewTransform*u_variables->modelTransform*vertexEyeNorm;
+
+		glm::vec3 vertexColor = glm::vec3(cbo[(index%3)*3+0],cbo[(index%3)*3+1],cbo[(index%3)*3+2]);*/
+
+		//Apply perspective matrix and perspective division
+		glm::vec4 pos = u_variables->perspectiveTransform*vertexEyePos;
+		pos.x /= pos.w;
+		pos.y /= pos.w;
+		pos.z /= pos.w;
+
+		//Emit vertex
+		vOut.center = glm::vec3(pos);
+		//vOut.eyeLightDirection = glm::vec3(eyeLightDir);
+		vOut.color = glm::vec3(cbo[3*index], cbo[3*index + 1], cbo[3*index + 2]);
+
+		sp[index] = vOut;
+	}
+}
+
+
+
+
+
+//TODO: Do this a lot more efficiently and in parallel
+__global__ void rasterizationKernelSphere(sphere* primitives, int primitivesCount, fragment* depthbuffer, 
+									glm::vec2 resolution, uniforms* u_variables, pipelineOpts opts)
+{
+	int index = (blockIdx.x * blockDim.x) + threadIdx.x;
+	if(index<primitivesCount){
+		if(index >= 0){
+
+
+			//For each primitive
+			//Load triangle localy
+			transformSphereToScreenSpace(primitives[index], resolution);
+			
+			sphere sp = primitives[index];
+
+			//AABB for triangle
+			glm::vec3 minPoint;
+			glm::vec3 maxPoint;
+			getAABBForSphere(sp, minPoint, maxPoint);
+
+
+			//Compute pixel range
+			//Do some per-fragment clipping and restrict to screen space
+			int minX = glm::max(glm::floor(minPoint.x),0.0f);
+			int maxX = glm::min(glm::ceil(maxPoint.x),resolution.x);
+			int minY = glm::max(glm::floor(minPoint.y),0.0f);
+			int maxY = glm::min(glm::ceil(maxPoint.y),resolution.y);
+
+
+			fragment frag;
+			frag.primitiveIndex = index;
+			//TODO: Do something more efficient than this
+			float rsq = sp.r * sp.r;
+			for(int x = minX; x <= maxX; ++x)
+			{
+				for(int y = minY; y <= maxY; ++y)
+				{
+					int dbindex = getDepthBufferIndex(x,y,resolution);
+					if(dbindex < 0)
+						continue;
+
+					frag.position.x = x;
+					frag.position.y = y;
+
+					glm::vec2 dis2 = glm::vec2(x,y) - glm::vec2(sp.center.x, sp.center.y);
+					float dis = dis2.length();
+
+					if(dis < sp.r)
+					{
+						//Blend values.
+						frag.depth = sp.center.z - glm::sqrt(rsq - dis * dis);
+						if(frag.depth > 0.0f && frag.depth < 1.0f)
+						{
+							//Only continue if pixel is in screen.
+							//TODO
+							frag.color = glm::vec3(1,0,0);
+							frag.normal = glm::normalize(glm::vec3(x, y, frag.depth) - sp.center);
+							//frag.lightDir = glm::normalize(tri.v0.eyeLightDirection*bCoords.x+tri.v1.eyeLightDirection*bCoords.y+tri.v2.eyeLightDirection*bCoords.z);
+							//frag.halfVector = glm::normalize(tri.v0.eyeHalfVector*bCoords.x+tri.v1.eyeHalfVector*bCoords.y+tri.v2.eyeHalfVector*bCoords.z);
+
+
+							fatomicMin(&(depthbuffer[dbindex].depthPrimTag),frag.depthPrimTag);
+
+							if(frag.depthPrimTag == depthbuffer[dbindex].depthPrimTag)//If this is true, we won the race condition
+								writeToDepthbuffer(x,y,frag, depthbuffer,resolution);
+
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+// Wrapper for the __global__ call that sets up the kernel calls and does a ton of memory management
+void cudaSphereRasterizeCore(uchar4* PBOpos, glm::vec2 resolution, float frame, float* vbo, int vbosize, float* nbo, int nbosize, 
+					   float* cbo, int cbosize, int* ibo, int ibosize, uniforms u_variables, pipelineOpts opts, PerformanceMetrics &metrics)
+{
+
+	// set up crucial magic
+	int tileSize = 8;
+	dim3 threadsPerBlock(tileSize, tileSize);
+	dim3 fullBlocksPerGrid((int)ceil(float(resolution.x)/float(tileSize)), (int)ceil(float(resolution.y)/float(tileSize)));
+
+	//set up framebuffer
+	framebuffer = NULL;
+	cudaMalloc((void**)&framebuffer, (int)resolution.x*(int)resolution.y*sizeof(glm::vec3));
+
+	//set up depthbuffer
+	depthbuffer = NULL;
+	cudaMalloc((void**)&depthbuffer, (int)resolution.x*(int)resolution.y*sizeof(fragment));
+
+	//kernel launches to black out accumulated/unaccumlated pixel buffers and clear our scattering states
+	clearImage<<<fullBlocksPerGrid, threadsPerBlock>>>(resolution, framebuffer, glm::vec3(0,0,0));
+
+	fragment frag;
+	frag.color = glm::vec3(0.0f);
+	frag.normal = glm::vec3(0.0f);
+	frag.position = glm::vec2(0.0f,0.0f);
+	frag.depth = MAX_DEPTH;
+	clearDepthBuffer<<<fullBlocksPerGrid, threadsPerBlock>>>(resolution, depthbuffer);
+
+	//------------------------------
+	//memory stuff
+	//------------------------------
+	//primitives = NULL;
+	//cudaMalloc((void**)&primitives, (ibosize/3)*sizeof(triangle));
+
+	//primitiveStageBuffer = NULL;
+	//cudaMalloc((void**)&primitiveStageBuffer, (ibosize/3)*sizeof(int));
+
+	spheres = NULL;
+	cudaMalloc((void**)&spheres, (vbosize)*sizeof(sphere));
+
+	device_uniforms = NULL;
+	cudaMalloc((void**)&device_uniforms, sizeof(uniforms));
+	cudaMemcpy( device_uniforms, &u_variables, sizeof(uniforms), cudaMemcpyHostToDevice);
+
+
+	device_ibo = NULL;
+	cudaMalloc((void**)&device_ibo, ibosize*sizeof(int));
+	cudaMemcpy( device_ibo, ibo, ibosize*sizeof(int), cudaMemcpyHostToDevice);
+
+	device_vbo = NULL;
+	cudaMalloc((void**)&device_vbo, vbosize*sizeof(float));
+	cudaMemcpy( device_vbo, vbo, vbosize*sizeof(float), cudaMemcpyHostToDevice);
+
+	device_nbo = NULL;
+	cudaMalloc((void**)&device_nbo, nbosize*sizeof(float));
+	cudaMemcpy( device_nbo, nbo, nbosize*sizeof(float), cudaMemcpyHostToDevice);
+
+	device_cbo = NULL;
+	cudaMalloc((void**)&device_cbo, cbosize*sizeof(float));
+	cudaMemcpy( device_cbo, cbo, cbosize*sizeof(float), cudaMemcpyHostToDevice);
+
+	tileSize = 32;
+	int primitiveBlocks = ceil(((float)vbosize/3)/((float)tileSize));
+
+	//------------------------------
+	//vertex shader
+	//------------------------------
+	sphereCenterShadeKernel<<<primitiveBlocks, tileSize>>>(device_vbo, vbosize, device_cbo, cbosize, spheres, device_uniforms, opts);
+	checkCUDAError("Kernel failed VS!");
+
+	cudaDeviceSynchronize();
+	//------------------------------
+	//primitive assembly
+	//------------------------------
+	//seems no need for sphere
+	//primitiveBlocks = ceil(((float)ibosize/3)/((float)tileSize));
+	//primitiveAssemblyKernel<<<primitiveBlocks, tileSize>>>(verticies,  device_ibo, ibosize, primitives, primitiveStageBuffer, device_uniforms, opts);
+
+
+	//cudaDeviceSynchronize();
+	//checkCUDAError("Kernel failed PA!");
+
+	//no need for backface culling
+	/*int NPrimitives = ibosize/3;
+	if(opts.backfaceCulling)
+	{
+		backfaceCulling<<<primitiveBlocks, tileSize>>>(primitives, primitiveStageBuffer, NPrimitives, opts);
+	}
+
+	if(opts.totalClipping)
+	{
+		totalClipping<<<primitiveBlocks, tileSize>>>(primitives, primitiveStageBuffer, NPrimitives, opts);
+	}*/
+
+	//------------------------------
+	//rasterization
+	//------------------------------
+
+
+	LARGE_INTEGER beginTime;
+	QueryPerformanceCounter( &beginTime );
+
+	// Code to measure ...
+	if(opts.rasterMode == NAIVE)
+	{
+		rasterizationKernelSphere<<<primitiveBlocks, tileSize>>>(spheres, vbosize, depthbuffer, resolution, device_uniforms, opts);
+	}else if(opts.rasterMode == BIN){
+		//binRasterizer(NPrimitives, resolution, opts);
+	}
+	
+	cudaDeviceSynchronize();
+	checkCUDAError("Kernel failed Raster!");
+
+	LARGE_INTEGER endTime;
+	QueryPerformanceCounter( &endTime );
+
+	LARGE_INTEGER timerFreq;
+	QueryPerformanceFrequency( &timerFreq );
+	const double freq = 1.0f / timerFreq.QuadPart;
+
+
+	const double timeSeconds = ( endTime.QuadPart - beginTime.QuadPart )* freq;;
+	metrics.rasterTimeSeconds = timeSeconds;
+	if(opts.recordMetrics){
+		//Calculate metrics
+		//TODO: Add more metrics
+		//calculateMetrics(metrics, primitives, primitiveStageBuffer, vbosize, resolution, primitiveBlocks, tileSize, opts);
 
 	}
 
