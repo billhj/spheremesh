@@ -374,10 +374,10 @@ __host__ __device__ void blinnPhongFSImpl(fragment* depthbuffer, int index,  uni
 {
 	//TODO: Implement light color shading
 	fragment frag = depthbuffer[index];
-	//glm::vec3 baseColor = frag.color;
-	//frag.color *= u_variables->blinnPhongParams.x;//Ambient term always present
+	glm::vec3 baseColor = frag.color;
+	frag.color *= u_variables->blinnPhongParams.x;//Ambient term always present
 
-	/*float NdotL = glm::max(glm::dot(frag.normal,frag.lightDir),0.0f);
+	float NdotL = glm::max(glm::dot(frag.normal,frag.lightDir),0.0f);
 	if (NdotL > 0.0f) {
 
 		glm::vec3 diffuseColor = u_variables->diffuseColor;
@@ -392,7 +392,7 @@ __host__ __device__ void blinnPhongFSImpl(fragment* depthbuffer, int index,  uni
 		if(opts.showTriangleColors)
 			specularColor = baseColor;
 		frag.color +=  u_variables->blinnPhongParams.z * u_variables->lightColor * specularColor * glm::pow(NdotHV, u_variables->shininess);
-	}*/
+	}
 
 	depthbuffer[index] = frag;
 }
@@ -1047,7 +1047,7 @@ __global__ void rasterizationKernelSphere(sphere* primitives, int primitivesCoun
 			{
 				for(int y = minY; y <= maxY; ++y)
 				{
-					/*int dbindex = getDepthBufferIndex(x,y,resolution);
+					int dbindex = getDepthBufferIndex(x,y,resolution);
 					if(dbindex < 0)
 						continue;
 
@@ -1055,9 +1055,9 @@ __global__ void rasterizationKernelSphere(sphere* primitives, int primitivesCoun
 					frag.position.y = y;
 
 					glm::vec2 dis2 = glm::vec2(x,y) - glm::vec2(sp.center.x, sp.center.y);
-					float dis = dis2.length();
+					float dis2s = dis2.x * dis2.x + dis2.y * dis2.y;
 
-					//if(dis < sp.r)
+					if(dis2s  < rx * ry)
 					{
 						//Blend values.
 						frag.depth = sp.center.z;// - glm::sqrt(rsq - dis * dis);
@@ -1065,8 +1065,8 @@ __global__ void rasterizationKernelSphere(sphere* primitives, int primitivesCoun
 						{
 							//Only continue if pixel is in screen.
 							//TODO
-							frag.color = glm::vec3(1,0,0);
 							frag.normal = glm::normalize(glm::vec3(x, y, frag.depth) - sp.center);
+							frag.color = glm::vec3(1,0,0);
 							//frag.lightDir = glm::normalize(tri.v0.eyeLightDirection*bCoords.x+tri.v1.eyeLightDirection*bCoords.y+tri.v2.eyeLightDirection*bCoords.z);
 							//frag.halfVector = glm::normalize(tri.v0.eyeHalfVector*bCoords.x+tri.v1.eyeHalfVector*bCoords.y+tri.v2.eyeHalfVector*bCoords.z);
 
@@ -1077,14 +1077,14 @@ __global__ void rasterizationKernelSphere(sphere* primitives, int primitivesCoun
 								writeToDepthbuffer(x,y,frag, depthbuffer,resolution);
 
 						}
-					}*/
+					}
 					//int dbindex = getDepthBufferIndex(x,y,resolution);
-					frag.depth = sp.center.z;// - glm::sqrt(rsq - dis * dis);
+					//frag.depth = sp.center.z;// - glm::sqrt(rsq - dis * dis);
 					//	if(frag.depth > 0.0f && frag.depth < 1.0f)
 					//	{
 					//		//Only continue if pixel is in screen.
 					//		//TODO
-							frag.color = glm::vec3(5,0,0);
+						//	frag.color = glm::vec3(5,0,0);
 					//		frag.normal = glm::normalize(glm::vec3(x, y, frag.depth) - sp.center);
 					//		//frag.lightDir = glm::normalize(tri.v0.eyeLightDirection*bCoords.x+tri.v1.eyeLightDirection*bCoords.y+tri.v2.eyeLightDirection*bCoords.z);
 					//		//frag.halfVector = glm::normalize(tri.v0.eyeHalfVector*bCoords.x+tri.v1.eyeHalfVector*bCoords.y+tri.v2.eyeHalfVector*bCoords.z);
@@ -1093,7 +1093,7 @@ __global__ void rasterizationKernelSphere(sphere* primitives, int primitivesCoun
 					//		fatomicMin(&(depthbuffer[dbindex].depthPrimTag),frag.depthPrimTag);
 
 					//		if(frag.depthPrimTag == depthbuffer[dbindex].depthPrimTag)//If this is true, we won the race condition
-								writeToDepthbuffer(x,y,frag, depthbuffer,resolution);
+							//	writeToDepthbuffer(x,y,frag, depthbuffer,resolution);
 					//	}
 				}
 			}
