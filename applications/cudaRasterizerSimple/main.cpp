@@ -7,9 +7,10 @@
 //-------------MAIN--------------
 //-------------------------------
 
+
 int main(int argc, char** argv){
 
-	bool loadedScene = false;
+/*	bool loadedScene = false;
 	for(int i=1; i<argc; i++){
 		string header; string data;
 		istringstream liness(argv[i]);
@@ -33,15 +34,17 @@ int main(int argc, char** argv){
 	if(!loadedScene){
 		cout << "Usage: mesh=[obj file]" << endl;
 		return 0;
-	}
+	}*/
 
+	spheres.spheres.push_back(glm::vec4(0.3,0.2,1,0.1));
+	spheres.colors.push_back(glm::vec3(1,1,1));
 	//Setup uniform variables
 
 	//TODO: Camera movable
 
 
 	u_pipelineOpts.fShaderProgram = BLINN_PHONG_SHADING;
-	u_pipelineOpts.rasterMode = BIN;
+	u_pipelineOpts.rasterMode = NAIVE;
 	u_pipelineOpts.showTriangleColors = false;
 	u_pipelineOpts.backfaceCulling = true;
 	u_pipelineOpts.totalClipping = true;
@@ -132,44 +135,54 @@ void savePerformanceMetrics()
 void runCuda(){
 	// Map OpenGL buffer object for writing from CUDA on a single GPU
 	// No data is moved (Win & Linux). When mapped to CUDA, OpenGL should not use this buffer
-	dptr=NULL;
-
-	vbo = mesh->getVBO();
-	vbosize = mesh->getVBOsize();
-
-	nbo = mesh->getNBO();
-	nbosize = mesh->getNBOsize();
-
-	float newcbo[] = {1.0, 0.0, 0.0, 
-		0.0, 1.0, 0.0, 
-		0.0, 0.0, 1.0};
-	if(!u_pipelineOpts.showTriangleColors){
-
-		glm::vec3 color = mesh->getColor();
-		for(int i = 0; i < 3; i++)
-		{
-			newcbo[3*i+0] = color.x;
-			newcbo[3*i+1] = color.y;
-			newcbo[3*i+2] = color.z;
-		}
+	if(true){
+		PerformanceMetrics metrics;
+		dptr=NULL;
+		cudaGLMapBufferObject((void**)&dptr, pbo);
+		cudaSphereRasterizeCore(dptr, glm::vec2(width, height), frame, &(spheres.spheres[0][0]), spheres.spheres.size() * 4,  &(spheres.colors[0][0]), spheres.colors.size() * 3, u_variables, u_pipelineOpts, metrics);
+		cudaGLUnmapBufferObject(pbo);
 	}
-	cbo = newcbo;
-	cbosize = 9;
+	else
+	{
+		dptr=NULL;
 
-	ibo = mesh->getIBO();
-	ibosize = mesh->getIBOsize();
+		vbo = mesh->getVBO();
+		vbosize = mesh->getVBOsize();
 
-	PerformanceMetrics metrics;
-	cudaGLMapBufferObject((void**)&dptr, pbo);
-	cudaRasterizeCore(dptr, glm::vec2(width, height), frame, vbo, vbosize, nbo, nbosize, cbo, cbosize, ibo, ibosize, u_variables, u_pipelineOpts, metrics);
-	cudaGLUnmapBufferObject(pbo);
-	if(u_pipelineOpts.recordMetrics){
-		performanceMetrics.push_back(metrics);
+		nbo = mesh->getNBO();
+		nbosize = mesh->getNBOsize();
+
+		float newcbo[] = {1.0, 0.0, 0.0, 
+			0.0, 1.0, 0.0, 
+			0.0, 0.0, 1.0};
+		if(!u_pipelineOpts.showTriangleColors){
+
+			glm::vec3 color = mesh->getColor();
+			for(int i = 0; i < 3; i++)
+			{
+				newcbo[3*i+0] = color.x;
+				newcbo[3*i+1] = color.y;
+				newcbo[3*i+2] = color.z;
+			}
+		}
+		cbo = newcbo;
+		cbosize = 9;
+
+		ibo = mesh->getIBO();
+		ibosize = mesh->getIBOsize();
+
+		PerformanceMetrics metrics;
+		cudaGLMapBufferObject((void**)&dptr, pbo);
+		cudaRasterizeCore(dptr, glm::vec2(width, height), frame, vbo, vbosize, nbo, nbosize, cbo, cbosize, ibo, ibosize, u_variables, u_pipelineOpts, metrics);
+		cudaGLUnmapBufferObject(pbo);
+		if(u_pipelineOpts.recordMetrics){
+			performanceMetrics.push_back(metrics);
 	}
 
 	vbo = NULL;
 	cbo = NULL;
 	ibo = NULL;
+	}
 
 	frame++;
 	fpstracker++;

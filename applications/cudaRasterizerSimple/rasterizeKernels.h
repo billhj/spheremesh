@@ -30,7 +30,7 @@ void cudaRasterizeCore(uchar4* pos, glm::vec2 resolution, float frame, float* vb
 					   float* cbo, int cbosize, int* ibo, int ibosize, uniforms viewMats, pipelineOpts opts, PerformanceMetrics &metrics);
 
 
-void cudaSphereRasterizeCore(uchar4* pos, glm::vec2 resolution, float frame, float* vbo, int vbosize, float* nbo, int nbosize, 
-					   float* cbo, int cbosize, int* ibo, int ibosize, uniforms viewMats, pipelineOpts opts, PerformanceMetrics &metrics);
+void cudaSphereRasterizeCore(uchar4* pos, glm::vec2 resolution, float frame, float* vbo, int vbosize,
+					   float* cbo, int cbosize, uniforms viewMats, pipelineOpts opts, PerformanceMetrics &metrics);
 
 #endif //RASTERIZEKERNEL_H

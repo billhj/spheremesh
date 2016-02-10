@@ -374,10 +374,10 @@ __host__ __device__ void blinnPhongFSImpl(fragment* depthbuffer, int index,  uni
 {
 	//TODO: Implement light color shading
 	fragment frag = depthbuffer[index];
-	glm::vec3 baseColor = frag.color;
-	frag.color *= u_variables->blinnPhongParams.x;//Ambient term always present
+	//glm::vec3 baseColor = frag.color;
+	//frag.color *= u_variables->blinnPhongParams.x;//Ambient term always present
 
-	float NdotL = glm::max(glm::dot(frag.normal,frag.lightDir),0.0f);
+	/*float NdotL = glm::max(glm::dot(frag.normal,frag.lightDir),0.0f);
 	if (NdotL > 0.0f) {
 
 		glm::vec3 diffuseColor = u_variables->diffuseColor;
@@ -392,7 +392,7 @@ __host__ __device__ void blinnPhongFSImpl(fragment* depthbuffer, int index,  uni
 		if(opts.showTriangleColors)
 			specularColor = baseColor;
 		frag.color +=  u_variables->blinnPhongParams.z * u_variables->lightColor * specularColor * glm::pow(NdotHV, u_variables->shininess);
-	}
+	}*/
 
 	depthbuffer[index] = frag;
 }
@@ -416,6 +416,7 @@ __global__ void fragmentShadeKernel(fragment* depthbuffer, glm::vec2 resolution,
 	int index = x + (y * resolution.x);
 	if(x<=resolution.x && y<=resolution.y){
 		if(depthbuffer[index].depth < MAX_DEPTH){
+			//normalFSImpl(depthbuffer, index, u_variables, opts);
 			switch(opts.fShaderProgram)
 			{
 			case DEPTH_SHADING:
@@ -992,7 +993,7 @@ __global__ void sphereCenterShadeKernel(float* vbo, int vbosize,  float* cbo, in
 		pos.x /= pos.w;
 		pos.y /= pos.w;
 		pos.z /= pos.w;
-
+		vOut.r = vbo[index*4+3] / pos.w;
 		//Emit vertex
 		vOut.center = glm::vec3(pos);
 		//vOut.eyeLightDirection = glm::vec3(eyeLightDir);
@@ -1017,23 +1018,26 @@ __global__ void rasterizationKernelSphere(sphere* primitives, int primitivesCoun
 
 			//For each primitive
 			//Load triangle localy
-			transformSphereToScreenSpace(primitives[index], resolution);
+			int rx;
+			int ry;
+			transformSphereToScreenSpace(primitives[index], resolution, rx, ry);
 			
 			sphere sp = primitives[index];
 
 			//AABB for triangle
 			glm::vec3 minPoint;
 			glm::vec3 maxPoint;
-			getAABBForSphere(sp, minPoint, maxPoint);
+			getAABBForSphere(sp, minPoint, maxPoint, rx, ry);
 
 
 			//Compute pixel range
 			//Do some per-fragment clipping and restrict to screen space
-			int minX = glm::max(glm::floor(minPoint.x),0.0f);
-			int maxX = glm::min(glm::ceil(maxPoint.x),resolution.x);
-			int minY = glm::max(glm::floor(minPoint.y),0.0f);
-			int maxY = glm::min(glm::ceil(maxPoint.y),resolution.y);
-
+			int minX = max(minPoint.x,0.0f);
+			int maxX = min(maxPoint.x,resolution.x);
+			int minY = max(minPoint.y,0.0f);
+			int maxY = min(maxPoint.y,resolution.y);
+			//minX = 600, maxX = 800;
+			//minY = 155, maxY = 214;
 
 			fragment frag;
 			frag.primitiveIndex = index;
@@ -1043,7 +1047,7 @@ __global__ void rasterizationKernelSphere(sphere* primitives, int primitivesCoun
 			{
 				for(int y = minY; y <= maxY; ++y)
 				{
-					int dbindex = getDepthBufferIndex(x,y,resolution);
+					/*int dbindex = getDepthBufferIndex(x,y,resolution);
 					if(dbindex < 0)
 						continue;
 
@@ -1053,10 +1057,10 @@ __global__ void rasterizationKernelSphere(sphere* primitives, int primitivesCoun
 					glm::vec2 dis2 = glm::vec2(x,y) - glm::vec2(sp.center.x, sp.center.y);
 					float dis = dis2.length();
 
-					if(dis < sp.r)
+					//if(dis < sp.r)
 					{
 						//Blend values.
-						frag.depth = sp.center.z - glm::sqrt(rsq - dis * dis);
+						frag.depth = sp.center.z;// - glm::sqrt(rsq - dis * dis);
 						if(frag.depth > 0.0f && frag.depth < 1.0f)
 						{
 							//Only continue if pixel is in screen.
@@ -1073,7 +1077,24 @@ __global__ void rasterizationKernelSphere(sphere* primitives, int primitivesCoun
 								writeToDepthbuffer(x,y,frag, depthbuffer,resolution);
 
 						}
-					}
+					}*/
+					//int dbindex = getDepthBufferIndex(x,y,resolution);
+					frag.depth = sp.center.z;// - glm::sqrt(rsq - dis * dis);
+					//	if(frag.depth > 0.0f && frag.depth < 1.0f)
+					//	{
+					//		//Only continue if pixel is in screen.
+					//		//TODO
+							frag.color = glm::vec3(5,0,0);
+					//		frag.normal = glm::normalize(glm::vec3(x, y, frag.depth) - sp.center);
+					//		//frag.lightDir = glm::normalize(tri.v0.eyeLightDirection*bCoords.x+tri.v1.eyeLightDirection*bCoords.y+tri.v2.eyeLightDirection*bCoords.z);
+					//		//frag.halfVector = glm::normalize(tri.v0.eyeHalfVector*bCoords.x+tri.v1.eyeHalfVector*bCoords.y+tri.v2.eyeHalfVector*bCoords.z);
+
+
+					//		fatomicMin(&(depthbuffer[dbindex].depthPrimTag),frag.depthPrimTag);
+
+					//		if(frag.depthPrimTag == depthbuffer[dbindex].depthPrimTag)//If this is true, we won the race condition
+								writeToDepthbuffer(x,y,frag, depthbuffer,resolution);
+					//	}
 				}
 			}
 		}
@@ -1081,8 +1102,8 @@ __global__ void rasterizationKernelSphere(sphere* primitives, int primitivesCoun
 }
 
 // Wrapper for the __global__ call that sets up the kernel calls and does a ton of memory management
-void cudaSphereRasterizeCore(uchar4* PBOpos, glm::vec2 resolution, float frame, float* vbo, int vbosize, float* nbo, int nbosize, 
-					   float* cbo, int cbosize, int* ibo, int ibosize, uniforms u_variables, pipelineOpts opts, PerformanceMetrics &metrics)
+void cudaSphereRasterizeCore(uchar4* PBOpos, glm::vec2 resolution, float frame, float* vbo, int vbosize, 
+					   float* cbo, int cbosize, uniforms u_variables, pipelineOpts opts, PerformanceMetrics &metrics)
 {
 
 	// set up crucial magic
@@ -1125,24 +1146,24 @@ void cudaSphereRasterizeCore(uchar4* PBOpos, glm::vec2 resolution, float frame, 
 	cudaMemcpy( device_uniforms, &u_variables, sizeof(uniforms), cudaMemcpyHostToDevice);
 
 
-	device_ibo = NULL;
+	/*device_ibo = NULL;
 	cudaMalloc((void**)&device_ibo, ibosize*sizeof(int));
-	cudaMemcpy( device_ibo, ibo, ibosize*sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy( device_ibo, ibo, ibosize*sizeof(int), cudaMemcpyHostToDevice);*/
 
 	device_vbo = NULL;
 	cudaMalloc((void**)&device_vbo, vbosize*sizeof(float));
 	cudaMemcpy( device_vbo, vbo, vbosize*sizeof(float), cudaMemcpyHostToDevice);
 
-	device_nbo = NULL;
+	/*device_nbo = NULL;
 	cudaMalloc((void**)&device_nbo, nbosize*sizeof(float));
-	cudaMemcpy( device_nbo, nbo, nbosize*sizeof(float), cudaMemcpyHostToDevice);
+	cudaMemcpy( device_nbo, nbo, nbosize*sizeof(float), cudaMemcpyHostToDevice);*/
 
 	device_cbo = NULL;
 	cudaMalloc((void**)&device_cbo, cbosize*sizeof(float));
 	cudaMemcpy( device_cbo, cbo, cbosize*sizeof(float), cudaMemcpyHostToDevice);
 
 	tileSize = 32;
-	int primitiveBlocks = ceil(((float)vbosize/3)/((float)tileSize));
+	int primitiveBlocks = ceil(((float)vbosize/4)/((float)tileSize));
 
 	//------------------------------
 	//vertex shader
@@ -1185,7 +1206,7 @@ void cudaSphereRasterizeCore(uchar4* PBOpos, glm::vec2 resolution, float frame, 
 	// Code to measure ...
 	if(opts.rasterMode == NAIVE)
 	{
-		rasterizationKernelSphere<<<primitiveBlocks, tileSize>>>(spheres, vbosize, depthbuffer, resolution, device_uniforms, opts);
+		rasterizationKernelSphere<<<primitiveBlocks, tileSize>>>(spheres, vbosize / 4, depthbuffer, resolution, device_uniforms, opts);
 	}else if(opts.rasterMode == BIN){
 		//binRasterizer(NPrimitives, resolution, opts);
 	}

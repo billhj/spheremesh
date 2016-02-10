@@ -32,9 +32,9 @@ __host__ __device__ void getAABBForTriangle(triangle tri, glm::vec3& minpoint, g
 }
 
 
-__host__ __device__ void getAABBForSphere(sphere sp, glm::vec3& minpoint, glm::vec3& maxpoint){
-	minpoint = glm::vec3(sp.center.x - sp.r, sp.center.y - sp.r, sp.center.z - sp.r);
-  maxpoint = glm::vec3(sp.center.x + sp.r, sp.center.y + sp.r, sp.center.z + sp.r);
+__host__ __device__ void getAABBForSphere(sphere sp, glm::vec3& minpoint, glm::vec3& maxpoint, int rx, int ry){
+	minpoint = glm::vec3(sp.center.x - rx, sp.center.y - ry, sp.center.z - sp.r);
+  maxpoint = glm::vec3(sp.center.x + rx, sp.center.y + ry, sp.center.z + sp.r);
 }
 
 
@@ -98,7 +98,7 @@ __host__ __device__ void transformTriToScreenSpace(triangle &tri, glm::vec2 reso
 
 //Converts a sphere center from clip space to a screen resolution mapped space 
 //From (-1:1,-1:1,-1:1) to (0:w, 0:h, 0:1)
-__host__ __device__ void transformSphereToScreenSpace(sphere &sp, glm::vec2 resolution)
+__host__ __device__ void transformSphereToScreenSpace(sphere &sp, glm::vec2 resolution, int& rx, int& ry)
 {
 	//Scale and shift x
 	sp.center.x = (sp.center.x+1.0)*0.5f*resolution.x;
@@ -106,8 +106,9 @@ __host__ __device__ void transformSphereToScreenSpace(sphere &sp, glm::vec2 reso
 	sp.center.y = (sp.center.y+1.0)*0.5f*resolution.y;
 	//Scale and shift z
 	sp.center.z = (sp.center.z+1.0)*0.5f;
-
-	sp.r = (sp.r+1.0)*0.5f;
+	sp.r = sp.r;
+	rx = sp.r*resolution.x;//(sp.r+1.0)*0.5f;//*(resolution.x + resolution.y)/2.0;
+	ry = sp.r*resolution.y;
 }
 
 //Returns true if the AABB defined by these two points overlaps with clip region (-1:1, -1:1, -1:1)

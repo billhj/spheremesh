@@ -65,6 +65,14 @@ int cbosize;
 int* ibo;
 int ibosize;
 
+
+struct SphereSet
+{
+	std::vector<glm::vec4> spheres;
+	std::vector<glm::vec3> colors;
+};
+SphereSet spheres;
+
 //-------------------------------
 //--------Global Variables-------
 //-------------------------------
