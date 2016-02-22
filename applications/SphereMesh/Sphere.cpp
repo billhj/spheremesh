@@ -84,6 +84,8 @@ void SphereSet::readSpheresFromFile(const std::string& filename)
 			lineData >> newSphere->m_radius;
 			newSphere->m_radius = newSphere->m_radius * sphereScale;
 
+			lineData >> newSphere->m_cluster;
+
 			m_spheres.push_back(newSphere);
 		}
 		myfile.close();

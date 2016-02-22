@@ -13,6 +13,7 @@ public:
 	void drawWireFrame();
 	float m_center[3];
 	float m_radius;
+	float m_cluster;
 	std::vector<SphereEdge*> edges;
 };
 
